@@ -16,13 +16,13 @@ public class ConsumptionServiceImpl implements ConsumptionService {
 	
 	@Override
 	public List<Consumption> getConsumption(Date fromDate, Date toDate) {
-		// TODO Auto-generated method stub
+		System.out.println("Get consumption from DB. "+fromDate.toString()+" - "+toDate.toString());
 		return null;
 	}
 
 	@Override
 	public void updateData(Date fromDate, Date toDate) {
-		// TODO Auto-generated method stub
+		System.out.println("Updating DB. "+fromDate.toString()+" - "+toDate.toString());
 		
 	}
 

@@ -1,5 +1,8 @@
 package org.home.ec.views.consumption;
 
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEvent;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -15,7 +18,13 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+
+import java.sql.Date;
+import java.util.List;
+
+import org.home.ec.data.Consumption;
 import org.home.ec.data.SamplePerson;
+import org.home.ec.services.ConsumptionService;
 import org.home.ec.services.SamplePersonService;
 import org.home.ec.views.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +33,25 @@ import org.springframework.data.domain.PageRequest;
 @PageTitle("Consumption")
 @Route(value = "consumption", layout = MainLayout.class)
 @Uses(Icon.class)
-public class ConsumptionView extends Composite<VerticalLayout> {
+public class ConsumptionView extends Composite<VerticalLayout> implements ComponentEventListener<ClickEvent<Button>>{
+	
+	private DatePicker dtPkrFromDate;
+    private DatePicker dtPkrToDate;
+	private Button btnRefresh;
+    private Button btnUpdate;
 
+	@Autowired()
+	private SamplePersonService samplePersonService;
+	    
+	@Autowired
+	private ConsumptionService consumptionService;
+	
     public ConsumptionView() {
         HorizontalLayout layoutRow = new HorizontalLayout();
-        DatePicker dtPkrFromDate = new DatePicker();
-        DatePicker dtPkrToDate = new DatePicker();
-        Button btnRefresh = new Button();
-        Button btnUpdate = new Button();
+        dtPkrFromDate = new DatePicker();
+        dtPkrToDate = new DatePicker();
+        btnRefresh = new Button();
+        btnUpdate = new Button();
         VerticalLayout layoutColumn2 = new VerticalLayout();
         Grid consumptionGrid = new Grid(SamplePerson.class);
         getContent().setWidth("100%");
@@ -48,9 +68,11 @@ public class ConsumptionView extends Composite<VerticalLayout> {
         btnRefresh.setText("Refresh");
         btnRefresh.setWidth("min-content");
         btnRefresh.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        btnRefresh.addClickListener(this);
         btnUpdate.setText("Update DB");
         btnUpdate.setWidth("min-content");
         btnUpdate.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        btnUpdate.addClickListener(this);
         layoutColumn2.setWidth("100%");
         layoutColumn2.getStyle().set("flex-grow", "1");
         consumptionGrid.setWidth("100%");
@@ -71,6 +93,22 @@ public class ConsumptionView extends Composite<VerticalLayout> {
                 .stream());
     }
 
-    @Autowired()
-    private SamplePersonService samplePersonService;
+	@Override
+	public void onComponentEvent(ClickEvent<Button> event) {
+		if(event.getSource().equals(btnUpdate)) {
+			System.out.println("Update database");
+			if(!(dtPkrFromDate.isEmpty() || dtPkrToDate.isEmpty())) {
+				consumptionService.updateData(Date.valueOf(dtPkrFromDate.getValue()),Date.valueOf(dtPkrToDate.getValue()));
+			}
+		}
+		else if(event.getSource().equals(btnRefresh)) {
+			System.out.println("Refresh view");
+			if(!(dtPkrFromDate.isEmpty() || dtPkrToDate.isEmpty())) {
+				List<Consumption> consumption=consumptionService.getConsumption(Date.valueOf(dtPkrFromDate.getValue()),Date.valueOf(dtPkrToDate.getValue()));
+			}
+		}
+		
+	}
+    
+
 }
