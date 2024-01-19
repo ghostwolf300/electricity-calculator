@@ -24,10 +24,10 @@ public class DataView extends Composite<VerticalLayout> {
 
     public DataView() {
         HorizontalLayout layoutRow = new HorizontalLayout();
-        DatePicker datePicker = new DatePicker();
-        DatePicker datePicker2 = new DatePicker();
-        Button buttonPrimary = new Button();
-        Button buttonPrimary2 = new Button();
+        DatePicker dtPkrFromDate = new DatePicker();
+        DatePicker dtPkrToDate = new DatePicker();
+        Button btnRefresh = new Button();
+        Button btnUpdate = new Button();
         VerticalLayout layoutColumn2 = new VerticalLayout();
         Tabs tabs = new Tabs();
         getContent().setWidth("100%");
@@ -37,32 +37,31 @@ public class DataView extends Composite<VerticalLayout> {
         layoutRow.setHeight("min-content");
         layoutRow.setAlignItems(Alignment.END);
         layoutRow.setJustifyContentMode(JustifyContentMode.START);
-        datePicker.setLabel("From Date");
-        datePicker.setWidth("min-content");
-        datePicker2.setLabel("To Date");
-        datePicker2.setWidth("min-content");
-        buttonPrimary.setText("Refresh");
-        buttonPrimary.setWidth("min-content");
-        buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonPrimary2.setText("Update DB");
-        buttonPrimary2.setWidth("min-content");
-        buttonPrimary2.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        dtPkrFromDate.setLabel("From Date");
+        dtPkrFromDate.setWidth("min-content");
+        dtPkrToDate.setLabel("To Date");
+        dtPkrToDate.setWidth("min-content");
+        btnRefresh.setText("Refresh");
+        btnRefresh.setWidth("min-content");
+        btnRefresh.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        btnUpdate.setText("Update DB");
+        btnUpdate.setWidth("min-content");
+        btnUpdate.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         layoutColumn2.setWidth("100%");
         layoutColumn2.getStyle().set("flex-grow", "1");
         tabs.setWidth("100%");
         setTabsSampleData(tabs);
         getContent().add(layoutRow);
-        layoutRow.add(datePicker);
-        layoutRow.add(datePicker2);
-        layoutRow.add(buttonPrimary);
-        layoutRow.add(buttonPrimary2);
+        layoutRow.add(dtPkrFromDate);
+        layoutRow.add(dtPkrToDate);
+        layoutRow.add(btnRefresh);
+        layoutRow.add(btnUpdate);
         getContent().add(layoutColumn2);
         layoutColumn2.add(tabs);
     }
 
     private void setTabsSampleData(Tabs tabs) {
-        tabs.add(new Tab("Dashboard"));
-        tabs.add(new Tab("Payment"));
-        tabs.add(new Tab("Shipping"));
+        tabs.add(new Tab("Consumption"));
+        tabs.add(new Tab("Price"));
     }
 }

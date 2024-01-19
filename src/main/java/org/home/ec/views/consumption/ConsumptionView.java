@@ -28,12 +28,12 @@ public class ConsumptionView extends Composite<VerticalLayout> {
 
     public ConsumptionView() {
         HorizontalLayout layoutRow = new HorizontalLayout();
-        DatePicker datePicker = new DatePicker();
-        DatePicker datePicker2 = new DatePicker();
-        Button buttonPrimary = new Button();
-        Button buttonPrimary2 = new Button();
+        DatePicker dtPkrFromDate = new DatePicker();
+        DatePicker dtPkrToDate = new DatePicker();
+        Button btnRefresh = new Button();
+        Button btnUpdate = new Button();
         VerticalLayout layoutColumn2 = new VerticalLayout();
-        Grid basicGrid = new Grid(SamplePerson.class);
+        Grid consumptionGrid = new Grid(SamplePerson.class);
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
         layoutRow.addClassName(Gap.MEDIUM);
@@ -41,28 +41,28 @@ public class ConsumptionView extends Composite<VerticalLayout> {
         layoutRow.setHeight("min-content");
         layoutRow.setAlignItems(Alignment.END);
         layoutRow.setJustifyContentMode(JustifyContentMode.START);
-        datePicker.setLabel("From Date");
-        datePicker.setWidth("min-content");
-        datePicker2.setLabel("To Date");
-        datePicker2.setWidth("min-content");
-        buttonPrimary.setText("Refresh");
-        buttonPrimary.setWidth("min-content");
-        buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonPrimary2.setText("Update DB");
-        buttonPrimary2.setWidth("min-content");
-        buttonPrimary2.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        dtPkrFromDate.setLabel("From Date");
+        dtPkrFromDate.setWidth("min-content");
+        dtPkrToDate.setLabel("To Date");
+        dtPkrToDate.setWidth("min-content");
+        btnRefresh.setText("Refresh");
+        btnRefresh.setWidth("min-content");
+        btnRefresh.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        btnUpdate.setText("Update DB");
+        btnUpdate.setWidth("min-content");
+        btnUpdate.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         layoutColumn2.setWidth("100%");
         layoutColumn2.getStyle().set("flex-grow", "1");
-        basicGrid.setWidth("100%");
-        basicGrid.getStyle().set("flex-grow", "0");
-        setGridSampleData(basicGrid);
+        consumptionGrid.setWidth("100%");
+        consumptionGrid.getStyle().set("flex-grow", "0");
+        setGridSampleData(consumptionGrid);
         getContent().add(layoutRow);
-        layoutRow.add(datePicker);
-        layoutRow.add(datePicker2);
-        layoutRow.add(buttonPrimary);
-        layoutRow.add(buttonPrimary2);
+        layoutRow.add(dtPkrFromDate);
+        layoutRow.add(dtPkrToDate);
+        layoutRow.add(btnRefresh);
+        layoutRow.add(btnUpdate);
         getContent().add(layoutColumn2);
-        layoutColumn2.add(basicGrid);
+        layoutColumn2.add(consumptionGrid);
     }
 
     private void setGridSampleData(Grid grid) {
