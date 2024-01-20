@@ -1,8 +1,12 @@
 package org.home.ec.data;
 
+import java.sql.Date;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
@@ -17,11 +21,9 @@ public class Consumption {
 	@Column(name="consumption")
 	private double consumption;
 	
-	@OneToOne(mappedBy="consumption")
-	@PrimaryKeyJoinColumn
-	//@JoinColumn(name="day", referencedColumnName="day")
-    //@JoinColumn(name="hour", referencedColumnName="hour")
-	private Price price;
+//	@OneToOne(fetch=FetchType.LAZY,mappedBy="consumption",cascade=CascadeType.ALL)
+//	@PrimaryKeyJoinColumn
+//	private Price price;
 	
 	public Consumption() {
 		super();
@@ -30,6 +32,11 @@ public class Consumption {
 	public Consumption(HourId id, double consumption) {
 		super();
 		this.id=id;
+		this.consumption=consumption;
+	}
+	
+	public Consumption(String keyDate, int keyHour, double consumption) {
+		this.id=new HourId(Date.valueOf(keyDate),keyHour);
 		this.consumption=consumption;
 	}
 
@@ -49,11 +56,11 @@ public class Consumption {
 		this.id = id;
 	}
 
-	public Price getPrice() {
-		return price;
-	}
-
-	public void setPrice(Price price) {
-		this.price = price;
-	}
+//	public Price getPrice() {
+//		return price;
+//	}
+//
+//	public void setPrice(Price price) {
+//		this.price = price;
+//	}
 }
