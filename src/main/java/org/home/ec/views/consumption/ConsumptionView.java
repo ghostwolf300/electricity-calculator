@@ -23,6 +23,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 
+import java.io.InputStream;
 import java.sql.Date;
 import java.util.Arrays;
 import java.util.List;
@@ -102,7 +103,7 @@ public class ConsumptionView extends Composite<VerticalLayout> implements Compon
     		consumptionGrid = new Grid<>(Consumption.class);
     		consumptionGrid.setWidth("100%");
             consumptionGrid.getStyle().set("flex-grow", "0");
-            consumptionGrid.setColumns("id.keyDate","id.keyHour","consumption");
+            consumptionGrid.setColumns("id.locationId","id.keyDate","id.keyHour","consumption");
             consumptionGrid.setItems(getSampleConsumption());
     	}
     	return consumptionGrid;
@@ -116,7 +117,14 @@ public class ConsumptionView extends Composite<VerticalLayout> implements Compon
     		fileDialog.add(dialogLayout);
     		
     		uploadFile=new Upload(memoryBuffer);
-    		uploadFile.addSucceededListener(this);
+//    		uploadFile.addSucceededListener(event -> {
+//    			InputStream fileData=memoryBuffer.getInputStream();
+//    			String fileName=event.getFileName();
+//    			long contentLength=event.getContentLength();
+//    			String mimeType=event.getMIMEType();
+//    			consumptionService.processConsumptionFile(fileData, fileName, contentLength, mimeType);
+//    		});
+    		uploadFile.addSucceededListener(event -> this.handleUpload(event));
     		fileDialog.add(uploadFile);
     		
     		Button btnCancel = new Button("Cancel", e -> fileDialog.close());
@@ -128,9 +136,9 @@ public class ConsumptionView extends Composite<VerticalLayout> implements Compon
     
     private List<Consumption> getSampleConsumption() {
     	List<Consumption> consumption=Arrays.asList(
-    			new Consumption("2024-01-20",0,10.0),
-    			new Consumption("2024-01-20",1,7.2),
-    			new Consumption("2024-01-20",3,5.1)
+    			new Consumption("2024-01-20",0,1234,10.0),
+    			new Consumption("2024-01-20",1,1234,7.2),
+    			new Consumption("2024-01-20",3,1234,5.1)
     			);
     	return consumption;
     }
@@ -166,10 +174,16 @@ public class ConsumptionView extends Composite<VerticalLayout> implements Compon
 		if(event.getClass().equals(ClickEvent.class)) {
 			this.handleClickEvents((ClickEvent<Button>)event);
 		}
-		else if(event.getClass().equals(SucceededEvent.class)){
-			
-		}
 		
+	}
+	
+	private void handleUpload(SucceededEvent event) {
+		InputStream fileData=memoryBuffer.getInputStream();
+		String fileName=event.getFileName();
+		long contentLength=event.getContentLength();
+		String mimeType=event.getMIMEType();
+		consumptionService.processConsumptionFile(fileData, fileName, contentLength, mimeType);
+		fileDialog.close();
 	}
     
 
