@@ -18,9 +18,6 @@ import jakarta.persistence.Table;
 @Table(name="t_consumption")
 public class Consumption {
 	
-	//@EmbeddedId
-	//private HourId id;
-	
 	@EmbeddedId
 	private ConsumptionId id;
 	
@@ -31,34 +28,23 @@ public class Consumption {
 	@MapsId("locationId")
 	private Location location;
 	
-//	@OneToOne(fetch=FetchType.LAZY,mappedBy="consumption",cascade=CascadeType.ALL)
-//	@PrimaryKeyJoinColumn
-//	private Price price;
-	
 	public Consumption() {
 		super();
 	}
 	
-	public Consumption(Date keyDate, int keyHour, long locationId,double consumption) {
+	public Consumption(Date keyDate, int keyHour,int keyMinute, long locationId,double consumption) {
 		super();
-		this.id=new ConsumptionId(keyDate,keyHour,locationId);
+		this.id=new ConsumptionId(keyDate,keyHour,keyMinute,locationId);
 		this.consumption=consumption;
+		this.location=new Location(locationId);
 	}
 	
-	public Consumption(String keyDate,int keyHour,long locationId,double consumption) {
+	public Consumption(String keyDate,int keyHour,int keyMinute,long locationId,double consumption) {
 		super();
-		this.id=new ConsumptionId(Date.valueOf(keyDate),keyHour,locationId);
+		this.id=new ConsumptionId(Date.valueOf(keyDate),keyHour,keyMinute,locationId);
 		this.consumption=consumption;
+		this.location=new Location(locationId);
 	}
-	
-	/*
-	 * public Consumption(HourId id, double consumption) { super(); this.id=id;
-	 * this.consumption=consumption; }
-	 * 
-	 * public Consumption(String keyDate, int keyHour, double consumption) {
-	 * this.id=new HourId(Date.valueOf(keyDate),keyHour);
-	 * this.consumption=consumption; }
-	 */
 
 	public ConsumptionId getId() {
 		return id;
@@ -76,16 +62,13 @@ public class Consumption {
 		this.consumption = consumption;
 	}
 
-	/*
-	 * public HourId getId() { return id; }
-	 * 
-	 * public void setId(HourId id) { this.id = id; }
-	 */
-//	public Price getPrice() {
-//		return price;
-//	}
-//
-//	public void setPrice(Price price) {
-//		this.price = price;
-//	}
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+
+
 }

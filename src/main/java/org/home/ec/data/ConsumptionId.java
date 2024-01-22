@@ -15,7 +15,12 @@ public class ConsumptionId implements Serializable {
 	 */
 	private static final long serialVersionUID = 5336190173280721205L;
 	
-	private HourId hourId;
+	@Column(name="key_date")
+	private Date keyDate;
+	@Column(name="key_hour")
+	private int keyHour;
+	@Column(name="key_minute")
+	private int keyMinute;
 	@Column(name="location_id")
 	private long locationId;
 	
@@ -23,17 +28,35 @@ public class ConsumptionId implements Serializable {
 		super();
 	}
 	
-	public ConsumptionId(Date keyDate,int keyHour,long locationId) {
-		this.hourId=new HourId(keyDate,keyHour);
+	public ConsumptionId(Date keyDate,int keyHour,int keyMinute,long locationId) {
+		this.keyDate=keyDate;
+		this.keyHour=keyHour;
+		this.keyMinute=keyMinute;
 		this.locationId=locationId;
 	}
 
-	public HourId getHourId() {
-		return hourId;
+	public Date getKeyDate() {
+		return keyDate;
 	}
 
-	public void setHourId(HourId hourId) {
-		this.hourId = hourId;
+	public void setKeyDate(Date keyDate) {
+		this.keyDate = keyDate;
+	}
+
+	public int getKeyHour() {
+		return keyHour;
+	}
+
+	public void setKeyHour(int keyHour) {
+		this.keyHour = keyHour;
+	}
+
+	public int getKeyMinute() {
+		return keyMinute;
+	}
+
+	public void setKeyMinute(int keyMinute) {
+		this.keyMinute = keyMinute;
 	}
 
 	public long getLocationId() {
@@ -43,18 +66,10 @@ public class ConsumptionId implements Serializable {
 	public void setLocationId(long locationId) {
 		this.locationId = locationId;
 	}
-	
-	public Date getKeyDate() {
-		return this.hourId.getKeyDate();
-	}
-	
-	public int getKeyHour() {
-		return this.hourId.getKeyHour();
-	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(hourId, locationId);
+		return Objects.hash(keyDate, keyHour, keyMinute, locationId);
 	}
 
 	@Override
@@ -64,7 +79,8 @@ public class ConsumptionId implements Serializable {
 		if (!(obj instanceof ConsumptionId))
 			return false;
 		ConsumptionId other = (ConsumptionId) obj;
-		return Objects.equals(hourId, other.hourId) && locationId == other.locationId;
+		return Objects.equals(keyDate, other.keyDate) && keyHour == other.keyHour && keyMinute == other.keyMinute
+				&& locationId == other.locationId;
 	}
 	
 	

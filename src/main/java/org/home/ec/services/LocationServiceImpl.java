@@ -3,26 +3,34 @@ package org.home.ec.services;
 import java.util.List;
 
 import org.home.ec.data.Location;
+import org.home.ec.data.LocationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class LocationServiceImpl implements LocationService {
-
+	
+	@Autowired
+	private LocationRepository repository;
+	
+	public LocationServiceImpl() {
+		super();
+	}
+	
 	@Override
 	public List<Location> getLocations() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Location> locations=repository.findAll();
+		return locations;
 	}
 
 	@Override
 	public void addLocation(Location location) {
-		// TODO Auto-generated method stub
-
+		repository.saveAndFlush(location);
 	}
 
 	@Override
 	public void removeLocation(Location location) {
-		// TODO Auto-generated method stub
+		repository.delete(location);
 
 	}
 

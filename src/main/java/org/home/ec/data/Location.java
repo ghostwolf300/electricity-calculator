@@ -81,8 +81,8 @@ public class Location {
 
 	@Override
 	public String toString() {
-		return "Location [id=" + id + ", " + (street != null ? "street=" + street + ", " : "")
-				+ (postcode != null ? "postcode=" + postcode + ", " : "") + (city != null ? "city=" + city : "") + "]";
+		return id + " " + (street != null ? street : "")
+				+ (postcode != null ? postcode : "") + (city != null ? city : "");
 	}
 
 	public List<Contract> getContracts() {

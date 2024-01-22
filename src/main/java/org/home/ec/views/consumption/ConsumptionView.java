@@ -6,6 +6,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -29,9 +30,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.home.ec.data.Consumption;
+import org.home.ec.data.Location;
 import org.home.ec.data.Price;
 import org.home.ec.data.SamplePerson;
 import org.home.ec.services.ConsumptionService;
+import org.home.ec.services.LocationService;
+import org.home.ec.services.LocationServiceImpl;
 import org.home.ec.services.SamplePersonService;
 import org.home.ec.views.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +46,7 @@ import org.springframework.data.domain.PageRequest;
 @Uses(Icon.class)
 public class ConsumptionView extends Composite<VerticalLayout> implements ComponentEventListener{
 	
+	private ComboBox<Location> cmbLocation;
 	private DatePicker dtPkrFromDate;
     private DatePicker dtPkrToDate;
 	private Button btnRefresh;
@@ -50,15 +55,18 @@ public class ConsumptionView extends Composite<VerticalLayout> implements Compon
     private final MemoryBuffer memoryBuffer = new MemoryBuffer();
     private Dialog fileDialog;
     private Upload uploadFile;
-
-	@Autowired()
-	private SamplePersonService samplePersonService;
 	    
 	@Autowired
 	private ConsumptionService consumptionService;
 	
-    public ConsumptionView() {
+	private final LocationService locationService;
+	
+    public ConsumptionView(LocationService locationService) {
+    	this.locationService=locationService;
+    	//createLocation();
         HorizontalLayout layoutRow = new HorizontalLayout();
+        cmbLocation=getLocationComboBox();
+        //fillComboBox();
         dtPkrFromDate = new DatePicker();
         dtPkrToDate = new DatePicker();
         btnRefresh = new Button();
@@ -89,6 +97,7 @@ public class ConsumptionView extends Composite<VerticalLayout> implements Compon
         layoutColumn2.getStyle().set("flex-grow", "1");
        
         getContent().add(layoutRow);
+        layoutRow.add(cmbLocation);
         layoutRow.add(dtPkrFromDate);
         layoutRow.add(dtPkrToDate);
         layoutRow.add(btnRefresh);
@@ -98,12 +107,30 @@ public class ConsumptionView extends Composite<VerticalLayout> implements Compon
         layoutColumn2.add(getConsumptionGrid());
     }
     
+    public ComboBox<Location> getLocationComboBox() {
+    	cmbLocation=new ComboBox<Location>();
+    	cmbLocation.setLabel("Location");
+    	List<Location> locations=locationService.getLocations();
+    	if(locations==null) {
+    		System.out.println("Locations is null!");
+    	}
+    	cmbLocation.setItems(locations);
+    	cmbLocation.setItemLabelGenerator(item->((Location)item).toString());
+    	return cmbLocation;
+    }
+    
+    private void fillComboBox() {
+    	List<Location> locations=locationService.getLocations();
+    	cmbLocation.setItems(locations);
+    	cmbLocation.setItemLabelGenerator(item->((Location)item).toString());
+    }
+    
     public Grid<Consumption> getConsumptionGrid(){
     	if(consumptionGrid==null) {
     		consumptionGrid = new Grid<>(Consumption.class);
     		consumptionGrid.setWidth("100%");
             consumptionGrid.getStyle().set("flex-grow", "0");
-            consumptionGrid.setColumns("id.locationId","id.keyDate","id.keyHour","consumption");
+            consumptionGrid.setColumns("id.locationId","id.keyDate","id.keyHour","id.keyMinute","consumption");
             consumptionGrid.setItems(getSampleConsumption());
     	}
     	return consumptionGrid;
@@ -136,33 +163,29 @@ public class ConsumptionView extends Composite<VerticalLayout> implements Compon
     
     private List<Consumption> getSampleConsumption() {
     	List<Consumption> consumption=Arrays.asList(
-    			new Consumption("2024-01-20",0,1234,10.0),
-    			new Consumption("2024-01-20",1,1234,7.2),
-    			new Consumption("2024-01-20",3,1234,5.1)
+    			new Consumption("2024-01-20",0,0,1234,10.0),
+    			new Consumption("2024-01-20",1,15,1234,7.2),
+    			new Consumption("2024-01-20",3,30,1234,5.1),
+    			new Consumption("2024-01-20",4,45,1234,2.8)
     			);
     	return consumption;
-    }
-    
-    private void setGridSampleData(Grid grid) {
-        grid.setItems(query -> samplePersonService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
     }
 
 	public void handleClickEvents(ClickEvent<Button> event) {
 	
 		if(event.getSource().equals(btnUpdate)) {
 			System.out.println("Update database");
-			if(!(dtPkrFromDate.isEmpty() || dtPkrToDate.isEmpty())) {
-				consumptionService.updateData(Date.valueOf(dtPkrFromDate.getValue()),Date.valueOf(dtPkrToDate.getValue()));
-				List<Consumption> consumption=consumptionService.getConsumption(Date.valueOf(dtPkrFromDate.getValue()),Date.valueOf(dtPkrToDate.getValue()));
-				consumptionGrid.setItems(consumption);
-			}
+//			if(!(dtPkrFromDate.isEmpty() || dtPkrToDate.isEmpty())) {
+//				consumptionService.updateData(Date.valueOf(dtPkrFromDate.getValue()),Date.valueOf(dtPkrToDate.getValue()));
+//				List<Consumption> consumption=consumptionService.getConsumption(Date.valueOf(dtPkrFromDate.getValue()),Date.valueOf(dtPkrToDate.getValue()));
+//				consumptionGrid.setItems(consumption);
+//			}
 		}
 		else if(event.getSource().equals(btnRefresh)) {
 			System.out.println("Refresh view");
-			if(!(dtPkrFromDate.isEmpty() || dtPkrToDate.isEmpty())) {
-				List<Consumption> consumption=consumptionService.getConsumption(Date.valueOf(dtPkrFromDate.getValue()),Date.valueOf(dtPkrToDate.getValue()));
+			if(!(cmbLocation.getValue()==null || dtPkrFromDate.isEmpty() || dtPkrToDate.isEmpty())) {
+				Location location=cmbLocation.getValue();
+				List<Consumption> consumption=consumptionService.getConsumption(location.getId(),Date.valueOf(dtPkrFromDate.getValue()),Date.valueOf(dtPkrToDate.getValue()));
 				consumptionGrid.setItems(consumption);
 			}
 		}
@@ -177,11 +200,17 @@ public class ConsumptionView extends Composite<VerticalLayout> implements Compon
 		
 	}
 	
+	private void createLocation() {
+		Location location=new Location(643007579000222511L,"Kumpurantie 6b","05200","Rajamäki");
+		locationService.addLocation(location);
+	}
+	
 	private void handleUpload(SucceededEvent event) {
 		InputStream fileData=memoryBuffer.getInputStream();
 		String fileName=event.getFileName();
 		long contentLength=event.getContentLength();
 		String mimeType=event.getMIMEType();
+		//createLocation();
 		consumptionService.processConsumptionFile(fileData, fileName, contentLength, mimeType);
 		fileDialog.close();
 	}

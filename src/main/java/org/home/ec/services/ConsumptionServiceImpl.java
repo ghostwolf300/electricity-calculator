@@ -23,6 +23,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.home.ec.data.Consumption;
 import org.home.ec.data.ConsumptionRepository;
 import org.home.ec.data.FingridDTO;
+import org.home.ec.data.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,9 +38,10 @@ public class ConsumptionServiceImpl implements ConsumptionService {
 	private ConsumptionRepository repository;
 	
 	@Override
-	public List<Consumption> getConsumption(Date fromDate, Date toDate) {
+	public List<Consumption> getConsumption(long locationId,Date fromDate, Date toDate) {
 		System.out.println("Get consumption from DB. "+fromDate.toString()+" - "+toDate.toString());
-		return null;
+		List<Consumption> consumption=repository.findByIdLocationIdAndIdKeyDateBetween(locationId,fromDate, toDate);
+		return consumption;
 	}
 
 	@Override
@@ -62,7 +64,7 @@ public class ConsumptionServiceImpl implements ConsumptionService {
 			e.printStackTrace();
 		}
 		
-		List<FingridDTO> dtos=new ArrayList<FingridDTO>();
+		List<Consumption> consumptionList=new ArrayList<Consumption>();
 		
 		for(CSVRecord rec : records) {
 			long locationId=Long.valueOf(rec.get("locationId"));
@@ -70,20 +72,22 @@ public class ConsumptionServiceImpl implements ConsumptionService {
 			ZonedDateTime fiTime=utcTime.withZoneSameInstant(ZoneId.of("Europe/Helsinki"));
 			Date keyDate=new Date(Date.from(fiTime.toInstant()).getTime());
 			int keyHour=fiTime.getHour();
-			double consumption=-1.0;
+			int keyMinute=fiTime.getMinute();
+			double amount=-1.0;
 			try {
-				consumption=numberFormat.parse(rec.get("amount")).doubleValue();
+				amount=numberFormat.parse(rec.get("amount")).doubleValue();
 			} 
 			catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-			System.out.println(locationId+"\t"+keyDate.toString()+"\t"+keyHour+"\t"+consumption);
-			dtos.add(new FingridDTO(locationId,keyDate,keyHour,consumption));
+			//System.out.println(locationId+"\t"+keyDate.toString()+"\t"+keyHour+"\t"+amount);
+			Consumption consumption=new Consumption(keyDate,keyHour,keyMinute,locationId,amount);
+			//consumption.setLocation(new Location(consumption.getId().getLocationId()));
+			consumptionList.add(consumption);
 		}
-		
-		//use java.stream to sum up hourly values?
+		repository.saveAllAndFlush(consumptionList);
 	
 	}
 	
