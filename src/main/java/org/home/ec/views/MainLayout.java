@@ -16,6 +16,7 @@ import org.home.ec.views.consumption.ConsumptionView;
 import org.home.ec.views.data.DataView;
 import org.home.ec.views.helloworld.HelloWorldView;
 import org.home.ec.views.price.PriceView;
+import org.home.ec.views.reporting.ReportingView;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 /**
@@ -58,6 +59,7 @@ public class MainLayout extends AppLayout {
         nav.addItem(new SideNavItem("About", AboutView.class, LineAwesomeIcon.FILE.create()));
         nav.addItem(new SideNavItem("Consumption", ConsumptionView.class, LineAwesomeIcon.BOLT_SOLID.create()));
         nav.addItem(new SideNavItem("Price", PriceView.class, LineAwesomeIcon.EURO_SIGN_SOLID.create()));
+        nav.addItem(new SideNavItem("Reporting", ReportingView.class, LineAwesomeIcon.CHART_BAR.create()));
         nav.addItem(new SideNavItem("Data", DataView.class, LineAwesomeIcon.DATABASE_SOLID.create()));
 
         return nav;

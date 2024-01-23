@@ -65,7 +65,7 @@ public class ConsumptionView extends Composite<VerticalLayout> implements Compon
     	this.locationService=locationService;
     	//createLocation();
         HorizontalLayout layoutRow = new HorizontalLayout();
-        cmbLocation=getLocationComboBox();
+        cmbLocation=createCmbLocation();
         //fillComboBox();
         dtPkrFromDate = new DatePicker();
         dtPkrToDate = new DatePicker();
@@ -107,22 +107,13 @@ public class ConsumptionView extends Composite<VerticalLayout> implements Compon
         layoutColumn2.add(getConsumptionGrid());
     }
     
-    public ComboBox<Location> getLocationComboBox() {
+    private ComboBox<Location> createCmbLocation() {
     	cmbLocation=new ComboBox<Location>();
-    	cmbLocation.setLabel("Location");
-    	List<Location> locations=locationService.getLocations();
-    	if(locations==null) {
-    		System.out.println("Locations is null!");
-    	}
-    	cmbLocation.setItems(locations);
-    	cmbLocation.setItemLabelGenerator(item->((Location)item).toString());
+        cmbLocation.setLabel("Location");
+        List<Location> locations=locationService.getLocations();
+        cmbLocation.setItems(locations);
+        cmbLocation.setItemLabelGenerator(item->((Location)item).toString());
     	return cmbLocation;
-    }
-    
-    private void fillComboBox() {
-    	List<Location> locations=locationService.getLocations();
-    	cmbLocation.setItems(locations);
-    	cmbLocation.setItemLabelGenerator(item->((Location)item).toString());
     }
     
     public Grid<Consumption> getConsumptionGrid(){
