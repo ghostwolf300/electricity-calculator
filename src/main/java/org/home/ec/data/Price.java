@@ -19,7 +19,7 @@ public class Price {
 	@EmbeddedId
 	private HourId id;
 	
-	@Column(name="price")
+	@Column(name="price", precision=8, scale=4)
 	private BigDecimal price;
 	
 //	@OneToOne(fetch=FetchType.LAZY)

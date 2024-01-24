@@ -28,6 +28,7 @@ import org.home.ec.data.Consumption;
 import org.home.ec.data.HourCost;
 import org.home.ec.data.IDayCost;
 import org.home.ec.data.IHourCost;
+import org.home.ec.data.IPeriodCost;
 import org.home.ec.data.Location;
 import org.home.ec.services.LocationService;
 import org.home.ec.services.ReportingService;
@@ -51,6 +52,7 @@ public class ReportingView extends Composite<VerticalLayout> {
 	private final Tab tbPeriodReport;
 	private Grid<IHourCost> gridHourReport;
 	private Grid<IDayCost> gridDayReport;
+	private Grid<IPeriodCost> gridPeriodReport;
 	private final VerticalLayout tabContent;
 	
     public ReportingView(ReportingService reportingService,LocationService locationService) {
@@ -142,7 +144,7 @@ public class ReportingView extends Composite<VerticalLayout> {
 	    	gridHourReport = new Grid<>(IHourCost.class);
 	    	gridHourReport.setWidth("100%");
 	        gridHourReport.getStyle().set("flex-grow", "0");
-	        gridHourReport.setColumns("keyDate","keyHour","hourConsumption","minConsumption","maxConsumption","price","averagePrice","hourCost");
+	        gridHourReport.setColumns("keyDate","keyHour","hourConsumption","minQuartConsumption","maxQuartConsumption","averageQuartConsumption","price","averagePrice","hourCostSpot","margin","hourCostTotal");
     	}
     	return gridHourReport;
     }
@@ -152,9 +154,19 @@ public class ReportingView extends Composite<VerticalLayout> {
     		gridDayReport = new Grid<>(IDayCost.class);
 	    	gridDayReport.setWidth("100%");
 	        gridDayReport.getStyle().set("flex-grow", "0");
-	        gridDayReport.setColumns("keyDate","dayConsumption","minConsumption","maxConsumption","minHourPrice","maxHourPrice","averageHourPrice","dayCost");
+	        gridDayReport.setColumns("keyDate","dayConsumption","minHourConsumption","maxHourConsumption","averageHourConsumption","minHourPrice","maxHourPrice","averageHourPrice","dayCostEUR");
     	}
     	return gridDayReport;
+    }
+    
+    private Grid<IPeriodCost> getGridPeriodReport(){
+    	if(gridPeriodReport==null) {
+    		gridPeriodReport = new Grid<>(IPeriodCost.class);
+	    	gridPeriodReport.setWidth("100%");
+	        gridPeriodReport.getStyle().set("flex-grow", "0");
+	        gridPeriodReport.setColumns("daysInPeriod","periodConsumption","minDayConsumption","maxDayConsumption","averageDayConsumption","minHourConsumption","maxHourConsumption","minHourPrice","maxHourPrice","periodCostEUR");
+    	}
+    	return gridPeriodReport;
     }
     
     private void setContent(Tab tab) {
@@ -166,7 +178,7 @@ public class ReportingView extends Composite<VerticalLayout> {
     		tabContent.add(getGridDayReport());
     	}
     	else if(tab.equals(tbPeriodReport)) {
-    		
+    		tabContent.add(getGridPeriodReport());
     	}
     }
     
@@ -183,6 +195,10 @@ public class ReportingView extends Composite<VerticalLayout> {
     			List<IDayCost> dayCost=reportingService.getDailyCost(location.getId(), fromDate, toDate);
     			System.out.println("Got day costs: "+dayCost.size());
     			getGridDayReport().setItems(dayCost);
+    		}
+    		else if(tbsReporting.getSelectedTab().equals(tbPeriodReport)) {
+    			IPeriodCost periodCost=reportingService.getPeriodCost(location.getId(), fromDate, toDate);
+    			getGridPeriodReport().setItems(periodCost);
     		}
     		this.setContent(tbsReporting.getSelectedTab());
     	}

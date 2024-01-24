@@ -17,14 +17,14 @@ public class Contract {
 	
 	@Id
 	@Column(name="id")
-	private long id;
+	private String id;
 	@Column(name="supplier")
 	private String supplier;
 	@Column(name="from_date")
 	private Date fromDate;
 	@Column(name="to_date")
 	private Date toDate;
-	@Column(name="margin")
+	@Column(name="margin", precision=8, scale=4)
 	private BigDecimal margin;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
@@ -34,20 +34,21 @@ public class Contract {
 		super();
 	}
 
-	public Contract(long id, String supplier, Date fromDate, Date toDate, double margin) {
+	public Contract(String id, String supplier, Date fromDate, Date toDate, double margin,Location location) {
 		super();
 		this.id = id;
 		this.supplier = supplier;
 		this.fromDate = fromDate;
 		this.toDate = toDate;
 		this.margin = BigDecimal.valueOf(margin);
+		this.location=location;
 	}
 
-	public long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

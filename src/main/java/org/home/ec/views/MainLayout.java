@@ -13,6 +13,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.home.ec.views.about.AboutView;
 import org.home.ec.views.consumption.ConsumptionView;
+import org.home.ec.views.contract.ContractView;
 import org.home.ec.views.data.DataView;
 import org.home.ec.views.helloworld.HelloWorldView;
 import org.home.ec.views.price.PriceView;
@@ -55,8 +56,9 @@ public class MainLayout extends AppLayout {
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
 
-        nav.addItem(new SideNavItem("Hello World", HelloWorldView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
-        nav.addItem(new SideNavItem("About", AboutView.class, LineAwesomeIcon.FILE.create()));
+        //nav.addItem(new SideNavItem("Hello World", HelloWorldView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
+        //nav.addItem(new SideNavItem("About", AboutView.class, LineAwesomeIcon.FILE.create()));
+        nav.addItem(new SideNavItem("Contract", ContractView.class, LineAwesomeIcon.FILE_CONTRACT_SOLID.create()));
         nav.addItem(new SideNavItem("Consumption", ConsumptionView.class, LineAwesomeIcon.BOLT_SOLID.create()));
         nav.addItem(new SideNavItem("Price", PriceView.class, LineAwesomeIcon.EURO_SIGN_SOLID.create()));
         nav.addItem(new SideNavItem("Reporting", ReportingView.class, LineAwesomeIcon.CHART_BAR.create()));

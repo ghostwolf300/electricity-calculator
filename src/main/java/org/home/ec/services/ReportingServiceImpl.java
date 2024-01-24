@@ -8,6 +8,7 @@ import org.home.ec.data.DayCost;
 import org.home.ec.data.HourCost;
 import org.home.ec.data.IDayCost;
 import org.home.ec.data.IHourCost;
+import org.home.ec.data.IPeriodCost;
 import org.home.ec.data.PeriodCost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,9 +32,9 @@ public class ReportingServiceImpl implements ReportingService {
 	}
 
 	@Override
-	public PeriodCost getPeriodCost(long locationId, Date fromDate, Date toDate) {
-		// TODO Auto-generated method stub
-		return null;
+	public IPeriodCost getPeriodCost(long locationId, Date fromDate, Date toDate) {
+		IPeriodCost periodCost=repository.calculatePeriodConsumptionAndCost(locationId, fromDate, toDate);
+		return periodCost;
 	}
 
 }

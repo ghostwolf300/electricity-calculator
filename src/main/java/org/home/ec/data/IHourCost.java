@@ -7,9 +7,12 @@ public interface IHourCost {
 	public Date getKeyDate();
 	public int getKeyHour();
 	public double getHourConsumption();
-	public double getMinConsumption();
-	public double getMaxConsumption();
+	public double getMinQuartConsumption();
+	public double getMaxQuartConsumption();
+	public double getAverageQuartConsumption();
 	public BigDecimal getPrice();
 	public BigDecimal getAveragePrice();
-	public BigDecimal getHourCost();
+	public BigDecimal getHourCostSpot();
+	public BigDecimal getMargin();
+	public BigDecimal getHourCostTotal();
 }

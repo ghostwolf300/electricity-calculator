@@ -6,11 +6,13 @@ import java.sql.Date;
 public interface IDayCost {
 	public Date getKeyDate();
 	public double getDayConsumption();
-	public double getMinConsumption();
-	public double getMaxConsumption();
+	public double getMinHourConsumption();
+	public double getMaxHourConsumption();
+	public double getAverageHourConsumption();
 	public BigDecimal getMinHourPrice();
 	public BigDecimal getMaxHourPrice();
 	public BigDecimal getAverageHourPrice();
-	public BigDecimal getDayCost();
+	public BigDecimal getDayCostC();
+	public BigDecimal getDayCostEUR();
 	
 }
