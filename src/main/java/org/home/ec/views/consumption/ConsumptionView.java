@@ -135,13 +135,6 @@ public class ConsumptionView extends Composite<VerticalLayout> implements Compon
     		fileDialog.add(dialogLayout);
     		
     		uploadFile=new Upload(memoryBuffer);
-//    		uploadFile.addSucceededListener(event -> {
-//    			InputStream fileData=memoryBuffer.getInputStream();
-//    			String fileName=event.getFileName();
-//    			long contentLength=event.getContentLength();
-//    			String mimeType=event.getMIMEType();
-//    			consumptionService.processConsumptionFile(fileData, fileName, contentLength, mimeType);
-//    		});
     		uploadFile.addSucceededListener(event -> this.handleUpload(event));
     		fileDialog.add(uploadFile);
     		

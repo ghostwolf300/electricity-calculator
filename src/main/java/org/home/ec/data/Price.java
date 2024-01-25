@@ -31,6 +31,11 @@ public class Price {
 	public Price() {
 		super();
 	}
+	
+	public Price(HourId id) {
+		super();
+		this.id=id;
+	}
 
 	public Price(HourId id, BigDecimal price) {
 		super();
@@ -39,8 +44,15 @@ public class Price {
 	}
 	
 	public Price(String keyDate,int keyHour,double price) {
+		super();
 		this.id=new HourId(Date.valueOf(keyDate),keyHour);
 		this.price=BigDecimal.valueOf(price);
+	}
+	
+	public Price(Date keyDate, int keyHour, BigDecimal price) {
+		super();
+		this.id=new HourId(keyDate,keyHour);
+		this.price=price;
 	}
 
 	public HourId getId() {

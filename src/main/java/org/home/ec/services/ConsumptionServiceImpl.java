@@ -8,6 +8,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -21,6 +22,7 @@ import java.util.Locale;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.home.ec.data.Consumption;
+import org.home.ec.data.ConsumptionId;
 import org.home.ec.data.ConsumptionRepository;
 import org.home.ec.data.FingridDTO;
 import org.home.ec.data.Location;
@@ -42,6 +44,11 @@ public class ConsumptionServiceImpl implements ConsumptionService {
 		System.out.println("Get consumption from DB. "+fromDate.toString()+" - "+toDate.toString());
 		List<Consumption> consumption=repository.findByIdLocationIdAndIdKeyDateBetween(locationId,fromDate, toDate);
 		return consumption;
+	}
+	
+	@Override
+	public void setConsumption(List<Consumption> consumption) {
+		repository.saveAllAndFlush(consumption);
 	}
 
 	@Override
@@ -70,7 +77,10 @@ public class ConsumptionServiceImpl implements ConsumptionService {
 			long locationId=Long.valueOf(rec.get("locationId"));
 			ZonedDateTime utcTime=ZonedDateTime.parse(rec.get("startTimeUTC"));
 			ZonedDateTime fiTime=utcTime.withZoneSameInstant(ZoneId.of("Europe/Helsinki"));
+			//ZonedDateTime fiTime=utcTime.withZoneSameInstant(ZoneId.of("Europe/Stockholm"));
 			Date keyDate=new Date(Date.from(fiTime.toInstant()).getTime());
+			Timestamp startTimeUTC=Timestamp.valueOf(utcTime.toLocalDateTime());
+			System.out.println(startTimeUTC.toString());
 			int keyHour=fiTime.getHour();
 			int keyMinute=fiTime.getMinute();
 			double amount=-1.0;
@@ -83,7 +93,7 @@ public class ConsumptionServiceImpl implements ConsumptionService {
 			}
 			
 			//System.out.println(locationId+"\t"+keyDate.toString()+"\t"+keyHour+"\t"+amount);
-			Consumption consumption=new Consumption(keyDate,keyHour,keyMinute,locationId,amount);
+			Consumption consumption=new Consumption(keyDate,keyHour,keyMinute,startTimeUTC,locationId,amount);
 			//consumption.setLocation(new Location(consumption.getId().getLocationId()));
 			consumptionList.add(consumption);
 		}
@@ -108,6 +118,32 @@ public class ConsumptionServiceImpl implements ConsumptionService {
 				.setDelimiter(';')
 				.build();
 		return csvFormat;
+	}
+
+	@Override
+	public List<Consumption> checkForMissingData(long locationId, Date fromDate, Date toDate) {
+		List<Consumption> missingData=new ArrayList<Consumption>();
+		List<Consumption> consumption=repository.findByIdLocationIdAndIdKeyDateBetween(locationId,fromDate, toDate);
+		//System.out.println("Checking period "+fromDate.toString()+" - "+toDate.toString());
+		for(LocalDate date=fromDate.toLocalDate();date.isBefore(toDate.toLocalDate());date=date.plusDays(1)){
+			for(int h=0;h<24;h++) {
+				for(int min=0;min<60;min+=15) {
+					//System.out.println("Checking for: "+date.toString()+"\th: "+h+"\tmin: "+min);
+					ConsumptionId checkId=new ConsumptionId(Date.valueOf(date),h,min,locationId);
+					boolean found=false;
+					for(Consumption c : consumption) {
+						if(c.getId().equals(checkId)) {
+							found=true;
+							break;
+						}
+					}
+					if(!found) {
+						missingData.add(new Consumption(checkId));
+					}
+				}
+			}
+		}
+		return missingData;
 	}
 
 }

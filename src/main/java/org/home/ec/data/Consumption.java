@@ -1,18 +1,13 @@
 package org.home.ec.data;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrimaryKeyJoinColumn;
-import jakarta.persistence.SqlResultSetMapping;
 import jakarta.persistence.Table;
 
 @Entity
@@ -21,6 +16,9 @@ public class Consumption {
 	
 	@EmbeddedId
 	private ConsumptionId id;
+	
+	@Column(name="start_time_utc")
+	private Timestamp startTimeUTC;
 	
 	@Column(name="consumption")
 	private double consumption;
@@ -33,9 +31,22 @@ public class Consumption {
 		super();
 	}
 	
+	public Consumption(ConsumptionId id) {
+		super();
+		this.id=id;
+	}
+	
 	public Consumption(Date keyDate, int keyHour,int keyMinute, long locationId,double consumption) {
 		super();
 		this.id=new ConsumptionId(keyDate,keyHour,keyMinute,locationId);
+		this.consumption=consumption;
+		this.location=new Location(locationId);
+	}
+	
+	public Consumption(Date keyDate, int keyHour,int keyMinute,Timestamp startTimeUTC,long locationId,double consumption) {
+		super();
+		this.id=new ConsumptionId(keyDate,keyHour,keyMinute,locationId);
+		this.startTimeUTC=startTimeUTC;
 		this.consumption=consumption;
 		this.location=new Location(locationId);
 	}
@@ -53,6 +64,14 @@ public class Consumption {
 
 	public void setId(ConsumptionId id) {
 		this.id = id;
+	}
+
+	public Timestamp getStartTimeUTC() {
+		return startTimeUTC;
+	}
+
+	public void setStartTimeUTC(Timestamp startTimeUTC) {
+		this.startTimeUTC = startTimeUTC;
 	}
 
 	public double getConsumption() {

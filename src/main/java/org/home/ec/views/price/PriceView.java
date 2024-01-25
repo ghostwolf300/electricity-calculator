@@ -7,10 +7,14 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.Uses;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
+import com.vaadin.flow.component.upload.SucceededEvent;
+import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -18,6 +22,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.Arrays;
@@ -40,9 +45,13 @@ public class PriceView extends Composite<VerticalLayout> implements ComponentEve
 	
 	private Button btnRefresh;
 	private Button btnUpdate;
+	private Button btnUpdateFromFile;
 	private DatePicker dtPkrFromDate;
 	private DatePicker dtPkrToDate;
 	private Grid<Price> priceGrid;
+	private final MemoryBuffer memoryBuffer = new MemoryBuffer();
+    private Dialog fileDialog;
+    private Upload uploadFile;
 	
 	@Autowired()
     private SamplePersonService samplePersonService;
@@ -56,6 +65,7 @@ public class PriceView extends Composite<VerticalLayout> implements ComponentEve
         dtPkrToDate = new DatePicker();
         btnRefresh = new Button();
         btnUpdate = new Button();
+        btnUpdateFromFile=new Button("Update File",e->fileDialog.open());
         VerticalLayout layoutColumn2 = new VerticalLayout();
         //Grid priceGrid = new Grid(SamplePerson.class);
         //priceGrid = new Grid<>();
@@ -75,10 +85,12 @@ public class PriceView extends Composite<VerticalLayout> implements ComponentEve
         btnRefresh.setWidth("min-content");
         btnRefresh.addClickListener(this);
         btnRefresh.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        btnUpdate.setText("Update DB");
+        btnUpdate.setText("Update API");
         btnUpdate.setWidth("min-content");
         btnUpdate.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         btnUpdate.addClickListener(this);
+        btnUpdateFromFile.setWidth("min-content");
+        btnUpdateFromFile.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         layoutColumn2.setWidth("100%");
         layoutColumn2.getStyle().set("flex-grow", "1");
         //priceGrid.setWidth("100%");
@@ -89,6 +101,7 @@ public class PriceView extends Composite<VerticalLayout> implements ComponentEve
         layoutRow.add(dtPkrToDate);
         layoutRow.add(btnRefresh);
         layoutRow.add(btnUpdate);
+        layoutRow.add(getFileUploadDialog(),btnUpdateFromFile);
         getContent().add(layoutColumn2);
         layoutColumn2.add(this.getPriceGrid());
     }
@@ -118,6 +131,33 @@ public class PriceView extends Composite<VerticalLayout> implements ComponentEve
     			);
     	return prices;
     }
+    
+    public Dialog getFileUploadDialog() {
+    	if(fileDialog==null) {
+    		fileDialog=new Dialog();
+    		fileDialog.setHeaderTitle("Upload consumption file");
+    		VerticalLayout dialogLayout = new VerticalLayout();
+    		fileDialog.add(dialogLayout);
+    		
+    		uploadFile=new Upload(memoryBuffer);
+    		uploadFile.addSucceededListener(event -> this.handleUpload(event));
+    		fileDialog.add(uploadFile);
+    		
+    		Button btnCancel = new Button("Cancel", e -> fileDialog.close());
+    		fileDialog.getFooter().add(btnCancel);
+
+    	}
+    	return fileDialog;
+    }
+    
+    private void handleUpload(SucceededEvent event) {
+		InputStream fileData=memoryBuffer.getInputStream();
+		String fileName=event.getFileName();
+		long contentLength=event.getContentLength();
+		String mimeType=event.getMIMEType();
+		priceService.processPriceFile(fileData, fileName, contentLength, mimeType);
+		fileDialog.close();
+	}
 
 	@Override
 	public void onComponentEvent(ClickEvent<Button> event) {
