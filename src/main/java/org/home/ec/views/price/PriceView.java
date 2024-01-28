@@ -9,7 +9,9 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.upload.SucceededEvent;
@@ -46,6 +48,7 @@ public class PriceView extends Composite<VerticalLayout> implements ComponentEve
 	private Button btnRefresh;
 	private Button btnUpdate;
 	private Button btnUpdateFromFile;
+	private Anchor ancDownload;
 	private DatePicker dtPkrFromDate;
 	private DatePicker dtPkrToDate;
 	private Grid<Price> priceGrid;
@@ -65,7 +68,11 @@ public class PriceView extends Composite<VerticalLayout> implements ComponentEve
         dtPkrToDate = new DatePicker();
         btnRefresh = new Button();
         btnUpdate = new Button();
+        ancDownload=new Anchor();
+        ancDownload.setId("download");
+        ancDownload.add(new Button(new Icon(VaadinIcon.DOWNLOAD_ALT)));
         btnUpdateFromFile=new Button("Update File",e->fileDialog.open());
+        
         VerticalLayout layoutColumn2 = new VerticalLayout();
         //Grid priceGrid = new Grid(SamplePerson.class);
         //priceGrid = new Grid<>();
@@ -101,6 +108,7 @@ public class PriceView extends Composite<VerticalLayout> implements ComponentEve
         layoutRow.add(dtPkrToDate);
         layoutRow.add(btnRefresh);
         layoutRow.add(btnUpdate);
+        layoutRow.add(ancDownload);
         layoutRow.add(getFileUploadDialog(),btnUpdateFromFile);
         getContent().add(layoutColumn2);
         layoutColumn2.add(this.getPriceGrid());
@@ -158,6 +166,10 @@ public class PriceView extends Composite<VerticalLayout> implements ComponentEve
 		priceService.processPriceFile(fileData, fileName, contentLength, mimeType);
 		fileDialog.close();
 	}
+    
+    private void handleDownload() {
+    	
+    }
 
 	@Override
 	public void onComponentEvent(ClickEvent<Button> event) {
@@ -174,6 +186,7 @@ public class PriceView extends Composite<VerticalLayout> implements ComponentEve
 			if(!(dtPkrFromDate.isEmpty() || dtPkrToDate.isEmpty())) {
 				List<Price> prices=priceService.getPrices(Date.valueOf(dtPkrFromDate.getValue()),Date.valueOf(dtPkrToDate.getValue()));
 				priceGrid.setItems(prices);
+				ancDownload.setHref("/download/prices?fromDate="+dtPkrFromDate.getValue().toString()+"&toDate="+dtPkrToDate.getValue().toString());
 			}
 		}
 	}
