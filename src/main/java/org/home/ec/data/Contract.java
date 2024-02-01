@@ -2,13 +2,16 @@ package org.home.ec.data;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,11 +27,16 @@ public class Contract {
 	private Date fromDate;
 	@Column(name="to_date")
 	private Date toDate;
+	@Column(name="base_charge",precision=5,scale=2)
+	private BigDecimal baseCharge;
 	@Column(name="margin", precision=8, scale=4)
 	private BigDecimal margin;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
 	private Location location;
+	
+	@OneToMany(mappedBy="contract",cascade=CascadeType.ALL,orphanRemoval=true)
+	private List<Transfer> transfers;
 	
 	public Contract() {
 		super();
@@ -76,6 +84,14 @@ public class Contract {
 		this.toDate = toDate;
 	}
 
+	public BigDecimal getBaseCharge() {
+		return baseCharge;
+	}
+
+	public void setBaseCharge(BigDecimal baseCharge) {
+		this.baseCharge = baseCharge;
+	}
+
 	public BigDecimal getMargin() {
 		return margin;
 	}
@@ -90,6 +106,14 @@ public class Contract {
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public List<Transfer> getTransfers() {
+		return transfers;
+	}
+
+	public void setTransfers(List<Transfer> transfers) {
+		this.transfers = transfers;
 	}
 
 	@Override

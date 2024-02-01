@@ -28,7 +28,7 @@ import org.home.ec.data.Consumption;
 import org.home.ec.data.HourCost;
 import org.home.ec.data.IDayCost;
 import org.home.ec.data.IHourCost;
-import org.home.ec.data.IPeriodCost;
+import org.home.ec.data.IPeriodCostEnergy;
 import org.home.ec.data.Location;
 import org.home.ec.services.LocationService;
 import org.home.ec.services.ReportingService;
@@ -52,7 +52,7 @@ public class ReportingView extends Composite<VerticalLayout> {
 	private final Tab tbPeriodReport;
 	private Grid<IHourCost> gridHourReport;
 	private Grid<IDayCost> gridDayReport;
-	private Grid<IPeriodCost> gridPeriodReport;
+	private Grid<IPeriodCostEnergy> gridPeriodReport;
 	private final VerticalLayout tabContent;
 	
     public ReportingView(ReportingService reportingService,LocationService locationService) {
@@ -159,12 +159,12 @@ public class ReportingView extends Composite<VerticalLayout> {
     	return gridDayReport;
     }
     
-    private Grid<IPeriodCost> getGridPeriodReport(){
+    private Grid<IPeriodCostEnergy> getGridPeriodReport(){
     	if(gridPeriodReport==null) {
-    		gridPeriodReport = new Grid<>(IPeriodCost.class);
+    		gridPeriodReport = new Grid<>(IPeriodCostEnergy.class);
 	    	gridPeriodReport.setWidth("100%");
 	        gridPeriodReport.getStyle().set("flex-grow", "0");
-	        gridPeriodReport.setColumns("daysInPeriod","periodConsumption","minDayConsumption","maxDayConsumption","averageDayConsumption","minHourConsumption","maxHourConsumption","minHourPrice","maxHourPrice","periodCostEUR");
+	        gridPeriodReport.setColumns("contractId","daysInPeriod","periodConsumption","averageHourConsumption","minHourConsumption","maxHourConsumption","minHourPrice","maxHourPrice","spotCostEUR","energyCostEUR","transferCostEUR");
     	}
     	return gridPeriodReport;
     }
@@ -197,8 +197,8 @@ public class ReportingView extends Composite<VerticalLayout> {
     			getGridDayReport().setItems(dayCost);
     		}
     		else if(tbsReporting.getSelectedTab().equals(tbPeriodReport)) {
-    			IPeriodCost periodCost=reportingService.getPeriodCost(location.getId(), fromDate, toDate);
-    			getGridPeriodReport().setItems(periodCost);
+    			IPeriodCostEnergy periodCostEnergy=reportingService.getPeriodCost(location.getId(), fromDate, toDate);
+    			getGridPeriodReport().setItems(periodCostEnergy);
     		}
     		this.setContent(tbsReporting.getSelectedTab());
     	}

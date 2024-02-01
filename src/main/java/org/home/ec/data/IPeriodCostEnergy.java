@@ -2,15 +2,16 @@ package org.home.ec.data;
 
 import java.math.BigDecimal;
 
-public interface IPeriodCost {
+public interface IPeriodCostEnergy {
+	public String getContractId();
 	public int getDaysInPeriod();
 	public double getPeriodConsumption();
-	public double getMinDayConsumption();
-	public double getMaxDayConsumption();
-	public double getAverageDayConsumption();
+	public double getAverageHourConsumption();
 	public double getMinHourConsumption();
 	public double getMaxHourConsumption();
 	public BigDecimal getMinHourPrice();
 	public BigDecimal getMaxHourPrice();
-	public BigDecimal getPeriodCostEUR();
+	public BigDecimal getSpotCostEUR();
+	public BigDecimal getEnergyCostEUR();
+	public BigDecimal getTransferCostEUR();
 }
