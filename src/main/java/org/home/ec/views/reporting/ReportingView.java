@@ -29,6 +29,7 @@ import org.home.ec.data.HourCost;
 import org.home.ec.data.IDayCost;
 import org.home.ec.data.IHourCost;
 import org.home.ec.data.IPeriodCostEnergy;
+import org.home.ec.data.ITransferCost;
 import org.home.ec.data.Location;
 import org.home.ec.services.LocationService;
 import org.home.ec.services.ReportingService;
@@ -53,6 +54,7 @@ public class ReportingView extends Composite<VerticalLayout> {
 	private Grid<IHourCost> gridHourReport;
 	private Grid<IDayCost> gridDayReport;
 	private Grid<IPeriodCostEnergy> gridPeriodReport;
+	private Grid<ITransferCost> gridTransferCost;
 	private final VerticalLayout tabContent;
 	
     public ReportingView(ReportingService reportingService,LocationService locationService) {
@@ -169,6 +171,16 @@ public class ReportingView extends Composite<VerticalLayout> {
     	return gridPeriodReport;
     }
     
+    private Grid<ITransferCost> getGridTransferCost(){
+    	if(gridTransferCost==null) {
+    		gridTransferCost = new Grid<>(ITransferCost.class);
+    		gridTransferCost.setWidth("100%");
+    		gridTransferCost.getStyle().set("flex-grow", "0");
+    		gridTransferCost.setColumns("id","description","consumption","unitPriceCt","transferCostEUR");
+    	}
+    	return gridTransferCost;
+    }
+    
     private void setContent(Tab tab) {
     	tabContent.removeAll();
     	if(tab.equals(tbHourReport)) {
@@ -179,6 +191,7 @@ public class ReportingView extends Composite<VerticalLayout> {
     	}
     	else if(tab.equals(tbPeriodReport)) {
     		tabContent.add(getGridPeriodReport());
+    		tabContent.add(getGridTransferCost());
     	}
     }
     
@@ -199,6 +212,8 @@ public class ReportingView extends Composite<VerticalLayout> {
     		else if(tbsReporting.getSelectedTab().equals(tbPeriodReport)) {
     			IPeriodCostEnergy periodCostEnergy=reportingService.getPeriodCost(location.getId(), fromDate, toDate);
     			getGridPeriodReport().setItems(periodCostEnergy);
+    			List<ITransferCost> transferCosts=reportingService.getTransferCost(location.getId(), fromDate, toDate);
+    			getGridTransferCost().setItems(transferCosts);
     		}
     		this.setContent(tbsReporting.getSelectedTab());
     	}

@@ -2,10 +2,13 @@ package org.home.ec.data;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.Transient;
 
 @Embeddable
 public class ConsumptionId implements Serializable {
@@ -23,6 +26,11 @@ public class ConsumptionId implements Serializable {
 	private int keyMinute;
 	@Column(name="location_id")
 	private long locationId;
+	
+	@Transient
+	private String keyMonth;
+	
+	private static final SimpleDateFormat DF_MONTH=new SimpleDateFormat("MM"); 
 	
 	public ConsumptionId() {
 		super();
@@ -65,6 +73,15 @@ public class ConsumptionId implements Serializable {
 
 	public void setLocationId(long locationId) {
 		this.locationId = locationId;
+	}
+	
+	public String getKeyMonth() {
+		return keyMonth;
+	}
+	
+	@PostLoad
+	private void postLoad() {
+		this.keyMonth=DF_MONTH.format(keyDate);
 	}
 
 	@Override

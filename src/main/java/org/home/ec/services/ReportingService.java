@@ -8,10 +8,12 @@ import org.home.ec.data.HourCost;
 import org.home.ec.data.IDayCost;
 import org.home.ec.data.IHourCost;
 import org.home.ec.data.IPeriodCostEnergy;
+import org.home.ec.data.ITransferCost;
 import org.home.ec.data.PeriodCost;
 
 public interface ReportingService {
 	public List<IHourCost> getHourlyCost(long locationId,Date fromDate,Date toDate);
 	public List<IDayCost> getDailyCost(long locationId,Date fromDate,Date toDate);
 	public IPeriodCostEnergy getPeriodCost(long locationId, Date fromDate,Date toDate);
+	public List<ITransferCost> getTransferCost(long locationId,Date fromDate,Date toDate);
 }

@@ -100,5 +100,34 @@ public interface ConsumptionRepository extends JpaRepository<Consumption, HourId
 	public IPeriodCostEnergy calculatePeriodCostSpot(@Param("locationId") long locationId,@Param("fromDate") Date fromDate,@Param("toDate") Date toDate);
 	
 	
-	//public IPeriodCostSupplier calculatePeriodCostSupplier(@Param("locationId") long locationId,@Param("fromDate") Date fromDate,@Param("toDate") Date toDate);
+	@Query("select "
+			+ "t.id as id,"
+			+ "t.description as description,"
+			+ "a.consumption as consumption,"
+			+ "t.price as unitPriceCt,"
+			+ "(cast(a.consumption as double)*cast(t.price as BigDecimal(6,4)))/100 as transferCostEUR "
+			+ "from "
+			+ "(select "
+			+ "h.transferId as transferId,"
+			+ "sum(h.hourConsumption) as consumption "
+			+ "from "
+			+ "(select "
+			+ "c.id.keyDate as keyDate,"
+			+ "c.id.keyHour as keyHour,"
+			+ "sum(c.consumption) as hourConsumption,"
+			+ "p.transfer.id as transferId "
+			+ "from "
+			+ "Consumption as c "
+			+ "left join TransferPeriod as p "
+			+ "on p.monthsApplied like '%'||cast(function('to_char',c.id.keyDate,'MM') as String)||'%' "
+			+ "and p.weekDaysApplied like '%'||cast(function('to_char',c.id.keyDate,'D') as String)||'%' "
+			+ "and c.id.keyHour between p.hourStart and p.hourEnd "
+			+ "where c.id.locationId=:locationId and c.id.keyDate between :fromDate and :toDate "
+			+ "group by c.id.keyDate,c.id.keyHour,p.transfer.id"
+			+ ") as h "
+			+ "group by h.transferId "
+			+ ") as a "
+			+ "join Transfer as t "
+			+ "on t.id=a.transferId")
+	public List<ITransferCost> calculateTransferCost(@Param("locationId") long locationId,@Param("fromDate") Date fromDate,@Param("toDate") Date toDate);
 }
